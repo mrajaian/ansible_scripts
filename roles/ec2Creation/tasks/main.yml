@@ -1,0 +1,147 @@
+---
+
+- name: Create security group for Quotes instance
+  local_action:
+    module: ec2_group
+    aws_access_key: "{{ aws_access_key }}"
+    aws_secret_key: "{{ aws_secret_key }}"
+    name: "sg-quotes"
+    description: "Access to the quotes microservice"
+    vpc_id: "{{ aws_vpc_id }}"
+    region: "{{ aws_region }}"
+    rules:
+      - proto: tcp
+        from_port: 22
+        to_port: 22
+        cidr_ip: 0.0.0.0/0
+      - proto: tcp
+        from_port: 443
+        to_port: 443
+        cidr_ip: 0.0.0.0/0
+      - proto: tcp
+        from_port: "{{ quotes_service_port }}"
+        to_port: "{{ quotes_service_port }}"
+        cidr_ip: 0.0.0.0/0
+    rules_egress:
+      - proto: all
+        cidr_ip: 0.0.0.0/0
+        
+- name: Create EC2 instance for quotes server
+  ec2:
+     key_name: "{{ keypair }}"
+     group: sg-quotes
+     instance_type: "{{ ec2_instance_type }}"
+     image: "{{ ami_name }}"
+     wait: true
+     exact_count: 1
+     count_tag:
+        Name: quotesServer
+     region: "{{ aws_region }}"
+     vpc_subnet_id: "{{ aws_subnet_id }}"
+     assign_public_ip: no
+  register: quotes_server
+
+  
+- name: Update ip of quotes server
+  add_host:
+    name: "{{ item.private_ip }}"  
+    groups: quotes_hosts
+  with_items: quotes_server.instances
+   
+
+- name: Create security group for newsfeed instance
+  local_action:
+    module: ec2_group
+    aws_access_key: "{{ aws_access_key }}"
+    aws_secret_key: "{{ aws_secret_key }}"
+    name: "sg-newsfeed"
+    description: "Access to the newsfeed microservice"
+    vpc_id: "{{ aws_vpc_id }}"
+    region: "{{ aws_region }}"
+    rules:
+      - proto: tcp
+        from_port: 22
+        to_port: 22
+        cidr_ip: 0.0.0.0/0
+      - proto: tcp
+        from_port: 443
+        to_port: 443
+        cidr_ip: 0.0.0.0/0
+      - proto: tcp
+        from_port: "{{ newsfeed_service_port }}"
+        to_port: "{{ newsfeed_service_port }}"
+        cidr_ip: 0.0.0.0/0
+    rules_egress:
+      - proto: all
+        cidr_ip: 0.0.0.0/0
+        
+- name: Create EC2 instance for newsfeed server
+  ec2:
+     key_name: "{{ keypair }}"
+     group: sg-newsfeed
+     instance_type: "{{ ec2_instance_type }}"
+     image: "{{ ami_name }}"
+     wait: true
+     region: "{{ aws_region }}"
+     vpc_subnet_id: "{{ aws_subnet_id }}"
+     exact_count: 1
+     count_tag:
+        Name: newsfeedServer     
+     assign_public_ip: no
+  register: newsfeed_server
+
+  
+- name: Update ip of newsfeed server
+  add_host:
+    name: "{{ item.private_ip }}"  
+    groups: newsfeed_hosts
+  with_items: newsfeed_server.instances
+
+   
+- name: Create security group for front end
+  local_action:
+    module: ec2_group
+    aws_access_key: "{{ aws_access_key }}"
+    aws_secret_key: "{{ aws_secret_key }}"
+    name: "sg-frontend"
+    description: "Access to the frontend"
+    vpc_id: "{{ aws_vpc_id }}"
+    region: "{{ aws_region }}"
+    rules:
+      - proto: tcp
+        from_port: 22
+        to_port: 22
+        cidr_ip: 0.0.0.0/0
+      - proto: tcp
+        from_port: 443
+        to_port: 443
+        cidr_ip: 0.0.0.0/0
+      - proto: tcp
+        from_port: "{{ frontend_service_port }}"
+        to_port: "{{ frontend_service_port }}"
+        cidr_ip: 0.0.0.0/0
+    rules_egress:
+      - proto: all
+        cidr_ip: 0.0.0.0/0
+        
+- name: Create EC2 instance for frontend
+  ec2:
+     key_name: "{{ keypair }}"
+     group: sg-frontend
+     instance_type: "{{ ec2_instance_type }}"
+     image: "{{ ami_name }}"
+     wait: true
+     region: "{{ aws_region }}"
+     exact_count: 1
+     count_tag:
+        Name: frontendServer
+     vpc_subnet_id: "{{ aws_subnet_id }}"
+     assign_public_ip: yes
+  register: frontend_server
+
+  
+- name: Update ip of quotes server
+  add_host:
+    name: "{{ item.public_ip }}"  
+    groups: frontend_hosts
+  with_items: frontend_server.instances

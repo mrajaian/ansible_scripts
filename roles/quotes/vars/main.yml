@@ -1,0 +1,3 @@
+---
+
+newsfeed_service_port: "{ hostvars[localhost][newsfeed_service_port] }"

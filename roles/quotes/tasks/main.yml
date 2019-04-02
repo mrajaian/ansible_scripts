@@ -1,0 +1,14 @@
+---
+
+- name: copy quotes jar into target host
+  copy: 
+    src: quotes.jar
+    dest: /opt/quotes.jar
+  become: yes
+  
+- name: Execute quotes jar and export environment variables 
+  shell: |
+    export APP_PORT="{{ quotes_service_port }}"
+    cd /opt/
+    java -jar quotes.jar
+  become: yes

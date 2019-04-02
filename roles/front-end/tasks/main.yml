@@ -1,0 +1,17 @@
+---
+- name: copy front end jar into target host
+  copy: 
+    src: front-end.jar
+    dest: /opt/front-endjar
+  become: yes
+  
+- name: Execute front end jar and export environment variables 
+  shell: |
+    export APP_PORT="{{ newsfeed_service_port }}"
+    export STATIC_URL="{{ static_url }}"
+    export QUOTE_SERVICE_URL="{{ quotes_url }}"
+    export NEWSFEED_SERVICE_URL="{{ newsfeed_url }}"
+    export NEWSFEED_SERVICE_TOKEN="{{ newsfeed_service_token }}"
+    cd /opt/
+    java -jar front-end.jar.jar
+  become: yes

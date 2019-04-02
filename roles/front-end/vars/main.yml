@@ -1,0 +1,7 @@
+---
+
+frontend_service_port: "{{ hostvars[localhost][frontend_service_port] }}"
+static_url: http://"{{ hostvars[localhost][frontend_ip] }}":"{{ frontend_service_port }}"
+quotes_url: http://"{{ hostvars[localhost][quotes_ip] }}":"{{ hostvars[localhost][quotes_service_port] }}"
+newsfeed_url: http://"{{ hostvars[localhost][newsfeed_ip] }}":{{ hostvars[localhost][newsfeed_service_port] }}"
+newsfeed_service_token: "hostvars[localhost][service_token] }}" 

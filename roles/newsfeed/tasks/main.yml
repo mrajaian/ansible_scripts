@@ -1,0 +1,14 @@
+---
+
+- name: copy newsfeed jar into target host
+  copy: 
+    src: newsfeed.jar
+    dest: /opt/newsfeed.jar
+  become: yes
+  
+- name: Execute newsfeed jar and export environment variables 
+  shell: |
+    export APP_PORT="{{ newsfeed_service_port }}"
+    cd /opt/
+    java -jar newsfeed.jar
+  become: yes

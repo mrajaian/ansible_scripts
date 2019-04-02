@@ -1,0 +1,19 @@
+---
+
+- hosts: localhost
+  become: yes
+  roles:
+    - loadConfig
+    - ec2Creation
+    
+- hosts: quotes_hosts
+  become: yes
+    - quotes
+    
+- hosts: newsfeed_hosts
+  become: yes
+    - newsfeed
+    
+- hosts: frontend_hosts
+  become: yes
+    - front-end

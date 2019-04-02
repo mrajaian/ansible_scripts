@@ -1,0 +1,14 @@
+---
+
+aws_region: eu-central-1
+aws_access_key: accesskey
+aws_secret_key: secretkey
+aws_vpc_id: vpc-40727d2b
+aws_subnet_id: subnet-689fbd15
+ami_name: ami-0a84197c3325910a9
+keypair: userKey
+ec2_instance_type: t3.medium
+quotes_service_port: 8000
+newsfeed_service_port: 8001
+frontend_service_port: 8002
+newsfeed_service_token: T1&eWbYXNWG1w1^YGKDPxAWJ@^et^&kX
